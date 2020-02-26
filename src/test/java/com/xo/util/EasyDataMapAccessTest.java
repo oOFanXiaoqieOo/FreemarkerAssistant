@@ -60,6 +60,10 @@ public void testSetDataTmpData() throws Exception {
     tmpData2.put("MyName","admin2");
     tmpData2.put("MyAge",99);
     System.out.println("testSetDataTmpData:"+ JSON.toJSONString(EDataMap.setData(tmpData2)));
+    Map<String,Object> tmpData3 = new HashMap<String,Object>();
+    tmpData3.put("MyName","666");
+    tmpData3.put("MyAge",11);
+    System.out.println("testAddDataTmpData:"+ JSON.toJSONString(EDataMap.addData(tmpData3,"MyName","_")));
 
     List<Map<String,Object>> a = new ArrayList<>();
     Map<String,Object> b = new HashMap<>();
@@ -87,7 +91,21 @@ public void testSetDataMyEntity() throws Exception {
     entity.setName("FanXiaoQie");
     entity.setAge("18");
     entity.setValue(100);
-    System.out.println("testGetData:"+ JSON.toJSONString(EDataMap.setData(entity)));
+    System.out.println("testSetData:"+ JSON.toJSONString(EDataMap.setData(entity)));
+
+
+
+    TestEntity entity3 = new TestEntity();
+    entity3.setName("2");
+    entity3.setAge("18");
+    entity3.setValue(100);
+    System.out.println("testAddKeyData:"+ JSON.toJSONString(EDataMap.addData(entity3,"name","_")));
+
+    TestEntity entity2 = new TestEntity();
+    entity2.setName("2");
+    entity2.setAge("18");
+    entity2.setValue(100);
+    System.out.println("testAddData:"+ JSON.toJSONString(EDataMap.addData(entity2,"_")));
 } 
 
 /** 

@@ -55,6 +55,12 @@ freemarker使用助手，主要用于组装模板导入需要的数据，便于�
 ----->b.使用setData(Map<String, Object> tmpData)组装Map数据（若插入相同Key数据，会覆盖原有Value数据）
 ----->c.使用setData(Object myEntity)组装Map数据（若插入相同属性数据，会覆盖原有Value数据）
 
+----->b2.使用addData(Map<String, Object> tmpData,String sep)组装Map数据（相同Key数据叠加，并以sep分隔）
+----->c2.使用addData(Object myEntity,String sep)组装Map数据（相同属性数据叠加，并以sep分隔）
+
+----->b3.使用setData(Map<String, Object> tmpData,String key,String sep)组装Map数据（只处理key数据，相同则叠加，并以sep分隔）
+----->c3.使用setData(Object myEntity,String key,String sep)组装Map数据（只处理key属性数据，相同则叠加，并以sep分隔）
+
 ----->d.使用setEntityListData(String dataMapListName,List<Object> myEntity)将List<Object>数据打包
 
 多数据打包
@@ -62,5 +68,8 @@ freemarker使用助手，主要用于组装模板导入需要的数据，便于�
 ----->f.使用setListData(List<Map<String, Object>> listData)在List中增加一堆数据
 ----->g.使用setListData(Map<String, Object> data)在List中增加一个数据
 ----->h.使用getListData获得List数据。返回List<Map<String, Object>>类型
+
+----->g2.setListData(String dataMapListName,List<Map<String, Object>> tmpListData)//将dataMapListName，list数据组装成Map<String, Object>
+----->h2.使用getData()获得组装获得数据
 
 ----->i.addListData(Map<String, Object> data,String aKey,String bKey,String sep) 在List中增加一个数据，若已存在aKey的Value属性值,则Bkey的Value值叠加，使用sep分隔

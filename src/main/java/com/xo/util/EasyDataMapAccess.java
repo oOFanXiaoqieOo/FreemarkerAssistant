@@ -47,6 +47,30 @@ public class EasyDataMapAccess {
         return data;
     }
 
+    /**将Map参数放入最终结果，叠加相同key值的value数据，并增加分隔数据*/
+    public Map<String,Object> addData(Map<String, Object> tmpData,String sep) {
+        for(String key:tmpData.keySet()){
+            Object value = tmpData.get(key);
+            if(data.containsKey(key)){//存在则数据叠加
+                data.put(key,data.get(key).toString()+sep+value);
+            }else{
+                data.put(key,value);
+            }
+        }
+        return data;
+    }
+    /**只叠加Key值，其他数据不做操作*/
+    public Map<String,Object> addData(Map<String, Object> tmpData,String key,String sep) {
+        if (data.containsKey(key) && tmpData.containsKey(key)) {//key重叠
+            data.put(key, data.get(key).toString() + sep + tmpData.get(key));
+        } else if (tmpData.containsKey(key)) {
+            data.put(key, tmpData.get(key));
+        } else {
+            //没有数据不做处理
+        }
+        return data;
+    }
+
     /**将Bean转换成Map后放入最终结果*/
     public Map<String,Object> setData(Object myEntity) throws IllegalAccessException {
         if(myEntity!=null){
@@ -65,8 +89,55 @@ public class EasyDataMapAccess {
         return data;
     }
 
+    /**将Bean转换成Map后放入最终结果,数据叠加*/
+    public Map<String,Object> addData(Object myEntity,String sep) throws IllegalAccessException {
+        if(myEntity!=null){
+            Field[] fields=myEntity.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                int mod=field.getModifiers();
+                if (Modifier.isStatic(mod) || Modifier.isFinal(mod)) {
+                    continue;
+                }
+                field.setAccessible(true);
+                if (field.get(myEntity) != null) {
+                    if(data.containsKey(field.getName())){
+                        data.put(field.getName(),data.get(field.getName()).toString()+sep+field.get(myEntity));
+                    }else{
+                        data.put(field.getName(), field.get(myEntity));
+                    }
+                }
+            }
+        }
+        return data;
+    }
+
+    public Map<String,Object> addData(Object myEntity,String key,String sep) throws IllegalAccessException {
+        if(myEntity!=null){
+            Field[] fields=myEntity.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                int mod=field.getModifiers();
+                if (Modifier.isStatic(mod) || Modifier.isFinal(mod)) {
+                    continue;
+                }
+                field.setAccessible(true);
+                if (field.get(myEntity) != null) {
+                    if(field.getName()==key&&data.containsKey(key)){//只处理特定key值
+                        data.put(key,data.get(key).toString()+sep+field.get(myEntity));
+                    }
+                }
+            }
+        }
+        return data;
+    }
+
     /**将List<Map>数据打包*/
     public Map<String,Object> setListData(String dataMapListName,List<Map<String, Object>> tmpListData) {
+        data.put(dataMapListName,tmpListData);
+        return data;
+    }
+
+    /**将List<Map>数据打包(有可能数据会不正确)*/
+    public Map<String,Object> setListDataOther(String dataMapListName,List<Object> tmpListData) {
         data.put(dataMapListName,tmpListData);
         return data;
     }
@@ -104,6 +175,16 @@ public class EasyDataMapAccess {
         this.listData.add(data);
     }
 
+    //根据key值 添加value数据
+    public void setListValueData(String key,List<Object> valuesList){
+        for(int i =0;i<valuesList.size();i++){
+            Map<String,Object> newData = new HashMap<>();
+            newData.put(key,valuesList.get(i));
+            setListData(newData);
+        }
+
+    }
+
     /**叠加一个数据
      * 针对Map数据只有一条的情况
      * 若List中存在aKey的Value值，则bKey的Value值相加
@@ -113,13 +194,13 @@ public class EasyDataMapAccess {
         int len = listData.size();
         if(data.get(aKey)!=null&&data.containsKey(aKey)&&data.get(bKey)!=null&&data.containsKey(bKey)&&len>0) {
             for (int i=0; i < len; i++) {
-                if (listData.get(i).get(aKey).equals(data.get(aKey))) {//aKey的Value相同
-                    if (listData.get(i).containsKey(bKey)&&!(listData.get(i).get(bKey).equals(data.get(bKey)))) {//bKey的Value值不同
+                if (listData.get(i).get(aKey)!=null&&listData.get(i).get(aKey).equals(data.get(aKey))) {//aKey的Value相同
+                    if (listData.get(i).containsKey(bKey) && !(listData.get(i).get(bKey).equals(data.get(bKey)))) {//bKey的Value值不同
                         listData.get(i).put(bKey, listData.get(i).get(bKey) + sep + data.get(bKey));
                         break;
                     }
-                }else{
-                    if(i == len-1){//未找到匹配
+                } else {
+                    if (i == len - 1) {//未找到匹配
                         this.listData.add(data);
                     }
                 }
